@@ -1,0 +1,117 @@
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Sistema</title>
+        <!-- Fonts -->
+        <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+
+        <!-- bootstrap 5 -->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">    
+    </head>
+    <body>
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="http://localhost:3000/menu"><strong>Menu</strong></a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="collapse navbar-collapse" id="navbarNavDropdown">
+                    <ul class="navbar-nav">
+                        <li class="nav-item">
+                            <a class="nav-link active" href="http://localhost:3000/index">Salir</a>
+                        </li>
+                    </ul>
+                </div>
+            
+            </div>
+        </nav>
+        
+        <div class="container p-4">
+            <!-- Main Content -->
+            <div class="content col-md-8 offset-2 p-4">
+                <div class="card" style="background:#eee;border-radius: 4px solid #777;box-shadow: 2px 2px 5px #777;">
+                    <div class="card-header"style="background:#A5A6AA; text-align:center; color:##393A39;"><strong>Encuesta Covid</strong></div>
+                        <div class="card-body" id="body">
+                           
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+
+    <script>
+        let url = document.URL;
+        let list = url.split("/",url.length);
+        let id = list[list.length-1];
+
+        url ="http://localhost:3000/covidInformationPage/"+id
+        fetch(url)
+            .then(response => response.json())
+            .then(json => {
+                
+                let body = document.getElementById("body")
+                body.innerHTML = "" 
+                if (json == null) {
+                    body.innerHTML +=    `
+                                        <form method="GET"  action="http://localhost:3000/User/covidSurveyPage/${id}">
+                                            <button type="submit" class="btn btn-success">LLenar Encuesta</button>
+                                        </form>
+                                        `
+                }else{       
+                    body.innerHTML +=   `
+                                            <div class="form-group row">
+                                                <label for="question1" class="col-md-4 col-form-label text-md-left" >Ha sentido malestar y poca energia ultimamente?</label>
+                                                <div class="col-md-2">
+                                                    <select name="question1"  class="form-control text-md-right " >
+                                                            <option>${json[0].Question1}</option>     
+                                                    </select>
+                                                </div>
+                                            </div>
+
+                                            <div class="form-group row">
+                                                <label for="question2" class="col-md-4 col-form-label text-md-left" >Ha tenido sintomas de tos en los ultimos 14 dias?</label>
+                                                <div class="col-md-2">
+                                                    <select name="question2"  class="form-control text-md-right " >
+                                                        <option>${json[0].Question2}</option>   
+                                                    </select>
+                                                </div>
+                                            </div>
+
+                                            <div class="form-group row">
+                                                <label for="question3" class="col-md-4 col-form-label text-md-left" >Tieneo ha sentido molestias en la garganta?</label>
+                                                <div class="col-md-2">
+                                                    <select name="question3"  class="form-control text-md-right " >
+                                                        <option>${json[0].Question3}</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+
+                                            <div class="form-group row">
+                                                <label for="question4" class="col-md-4 col-form-label text-md-left" >Se ha relacionado con una persona con covid?</label>
+                                                <div class="col-md-2">
+                                                    <select name="question4"  class="form-control text-md-right " >
+                                                        <option>${json[0].Question4}</option>     
+                                                    </select>
+                                                </div>
+                                            </div>
+
+                                            <div class="form-group row">
+                                                <label for="question5" class="col-md-4 col-form-label text-md-left" >Cree usted que tiene covid seriamente hablando?</label>
+                                                <div class="col-md-2">
+                                                    <select name="question5"  class="form-control text-md-right " >
+                                                        <option>${json[0].Question5}</option>     
+                                                    </select>
+                                                </div>
+                                            </div>
+                                    `
+                }
+            }).catch(err => console.log(err))
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4" crossorigin="anonymous"></script>
+</html>

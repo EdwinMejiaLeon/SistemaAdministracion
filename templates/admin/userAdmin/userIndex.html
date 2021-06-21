@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Sistema</title>
+        <!-- Fonts -->
+        <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+
+        <!-- bootstrap 5 -->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">    
+    </head>
+    <body>
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="http://localhost:3000/menu"><strong>Menu</strong></a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="collapse navbar-collapse" id="navbarNavDropdown">
+                    <ul class="navbar-nav">
+                        <li class="nav-item">
+                            <a class="nav-link active" href="http://localhost:3000/index">Salir</a>
+                        </li>
+                    </ul>
+                </div>
+            
+            </div>
+        </nav>
+        
+        <div class="container p-4">
+            <div class="container p-4">
+                <div class="row justify-content-center">
+                    <div>
+                        <div class="card">
+                            <div class="card-header text-center"><strong>Tabla de Usuarios</strong></div>
+    
+                            <div class="card-body">
+                                <div>
+                                    <div class="table-responsive">
+                                        <table class="table">
+                                            <thead class="table-header text-center">
+                                            <tr id="menu">
+                        
+                                            </tr> 
+                                            </thead>
+                                            <tbody id="users">
+
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div> 
+                        </div>
+                    </div>
+                </div>
+            </div>
+          
+        </div>    
+    </body>
+
+    <script>
+        let roleUser = "";
+    
+        fetch('http://localhost:3000/UserRole')
+            .then(response => response.json())
+            .then(json => { 
+                roleUser = json
+                let menu = document.getElementById("menu")
+                menu.innerHTML = ""
+                if (roleUser =='admin') {
+                    menu.innerHTML =    `
+                                        <th scope="col">ID</th>
+                                        <th scope="col">NOMBRE</th>
+                                        <th scope="col">EMAIL</th>
+                                        <th scope="col">HISTORIAL CAMBIOS</th>
+                                        <th scope="col" style="width: 300px;">ACCIONES</th>
+                                        `
+                }else{
+                    menu.innerHTML =    `
+                                        <th scope="col">ID</th>
+                                        <th scope="col">NOMBRE</th>
+                                        <th scope="col">EMAIL</th>
+                                        <th scope="col" style="width: 300px;">ACCIONES</th>
+                                        `
+                }
+            }).catch(err => console.log(err))
+        
+        fetch('http://localhost:3000/UserAll')
+            .then(response => response.json())
+            .then(json => {
+
+                fetch('http://localhost:3000/SupervisorData')
+                .then(response => response.json())
+                .then(change => {    
+                    console.log(change)
+                
+                    let userLogin = json[json.length -1];
+                    let data = document.getElementById("users");
+                    let action;
+                    let rowTable;
+                    let changesUser;
+                    
+                    for (i=0;i<json.length -1;i++){
+                        rowTable = ""
+                        rowTable = `
+                                    <tr>
+                                        <td class="text-center">${json[i].ID}</td>
+                                        <td class="text-center">${json[i].Name}</td>
+                                        <td class="text-center">${json[i].Email}</td>
+                                    `
+                        if (roleUser =='admin') {
+                            changesUser = ""
+                            for (l=0; l < change.length; l++){
+                                if (change[l].UsuarioId == json[i].ID){
+                                    changesUser +=  `
+                                                    <ul>
+                                                        <li>
+                                                            <p><strong>Supervisor : ${change[l].NameSupervisor}</strong></p>
+                                                            <p class='text-success'>Anterior : ${change[l].PreviousChange}</p>
+                                                            <p class='text-danger'>Nuevo : ${change[l].NewChange}</p>
+                                                        </li>
+                                                    </ul>
+                                                    `
+                                }
+                            }
+                            rowTable += `
+                                            <td class="text-center">${changesUser}</td>
+                                        `
+                        }
+                        rowTable += `
+                                        <td class="text-center" id="action.${i}"></td>
+                                    </tr>
+                                    `
+                        
+                        data.innerHTML += rowTable
+                        action = document.getElementById("action."+i)
+                        if (userLogin.Role == 'admin'){
+                            if (!json[i].State){
+                                action.innerHTML =   `
+                                                    <form method="POST" class="d-inline-block pl-3" action="http://localhost:3000/UserDelete/${json[i].ID}">
+                                                        <button type="submit" class="btn btn-danger">Eliminar</button>
+                                                    </form> 
+                                    
+                                                    <a class="d-inline-block" href="http://localhost:3000/UserEditPage/${json[i].ID}">
+                                                        <button type="submit" class="btn btn-primary">Editar</button>
+                                                    </a>
+                                    
+                                                    <a class="d-inline-block" href="http://localhost:3000/UserActive/${json[i].ID}">
+                                                        <button type="submit" class="btn btn-success">Activar</button>
+                                                    </a>
+                                                    `
+                            }else{
+                                action.innerHTML =  `
+                                                    <form method="POST" class="d-inline-block pl-3" action="http://localhost:3000/UserDelete/${json[i].ID}">
+                                                        <button type="submit" class="btn btn-danger">Eliminar</button>
+                                                    </form> 
+                                    
+                                                    <a class="d-inline-block" href="http://localhost:3000/UserEditPage/${json[i].ID}">
+                                                        <button type="submit" class="btn btn-primary">Editar</button>
+                                                    </a>
+                                                    `
+                            }
+                        }else{
+                            if (json[i].Role != 'admin'){
+                                action.innerHTML =  `
+                                                <a class="d-inline-block" href="http://localhost:3000/UserEditPage/${json[i].ID}">
+                                                    <button type="submit" class="btn btn-primary">Editar</button>
+                                                </a>
+                                                `
+                            }
+                        }
+                    }
+                }).catch(err => console.log(err))  
+            }).catch(err => console.log(err))
+
+
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4" crossorigin="anonymous"></script>
+</html>

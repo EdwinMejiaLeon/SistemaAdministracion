@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Sistema</title>
+        <!-- Fonts -->
+        <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+        <!-- bootstrap 5 -->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">    
+    </head>
+    <body>
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="http://localhost:3000/menu"><strong>Menu</strong></a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="collapse navbar-collapse" id="navbarNavDropdown">
+                    <ul class="navbar-nav">
+                        <li class="nav-item">
+                            <a class="nav-link active" href="http://localhost:3000/index">Salir</a>
+                        </li>
+                    </ul>
+                </div>
+            
+            </div>
+        </nav>
+        
+        <div class="container p-4">
+            <div class="container p-4">
+                <div class="row justify-content-center">
+                    <div class="col-md-8">
+                        <div class="card">
+                            <div class="card-header text-center"><strong>Información de Usuario</strong></div>
+    
+                            <div class="card-body">
+                                <div id="body">
+                                
+                                </div>
+                            </div> 
+    
+                        </div>
+                    </div>
+                </div>
+            </div>
+          
+        </div>    
+    </body>
+
+    <script>
+        let url = document.URL;
+        let list = url.split("/",url.length);
+        let id = list[list.length-1];
+
+        url ="http://localhost:3000/UserGetEdit/"+id
+
+        fetch(url)
+            .then(response => response.json())
+            .then(json => {
+                
+                let data =document.getElementById("body")
+                data.innerHTML = `
+                <form method="POST" action="http://localhost:3000/UserAll/${id}">
+                    <div class="form-group row p-2">
+                        <label for="Name" class="col-md-4 col-form-label text-md-right">Nombre Completo</label>
+                        <div class="col-md-6">
+                            <input type="text"  class="form-control" name="Name" value="${ json[0].Name }" required autofocus>
+                        </div>
+                    </div>
+                    <div class="form-group row p-2">
+                        <label for="Email" class="col-md-4 col-form-label text-md-right">Email Completo</label>
+                        <div class="col-md-6">
+                            <input type="text" class="form-control" name="Email" value="${ json[0].Email }" required autofocus>
+                        </div>
+                    </div>
+                    <div class="form-group row p-2">
+                        <label for="Role" class="col-md-4 col-form-label text-md-right" >Rol</label>
+                        <div class="col-md-6" id="option">
+                        </div>
+                    </div>
+                    <div class="form-group row mb-0 p-2">
+                        <div class="col-md-6 offset-md-4">
+                            <button type="submit" class="btn btn-primary">Guardar</button>
+                        </div>
+                    </div>    
+                </form>
+                `
+                
+                let option =document.getElementById("option")
+                if (json[0].Role == 'admin') {
+                    option.innerHTML =  `
+                                        <select name="Role" class="form-control text-md-right">
+                                            <option value="admin" selected >Administrador</option>
+                                            <option value="supervisor">Supervisor</option>
+                                            <option value="user_basic">Usuario</option>
+                                        </select>    
+                                        `
+                } 
+                if(json[0].Role == 'supervisor'){
+                    option.innerHTML =  `
+                                        <select name="Role" class="form-control text-md-right">
+                                            <option value="admin">Administrador</option>
+                                            <option value="supervisor" selected>Supervisor</option>
+                                            <option value="user_basic">Usuario</option>
+                                        </select>    
+                                        `
+                }
+                if(json[0].Role == 'user_basic'){
+                    option.innerHTML =  `
+                                        <select name="Role" class="form-control text-md-right">
+                                            <option value="admin">Administrador</option>
+                                            <option value="supervisor">Supervisor</option>
+                                            <option value="user_basic" selected>Usuario</option>
+                                        </select>    
+                                        `
+                }
+            })
+            .catch(err => console.log(err))
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4" crossorigin="anonymous"></script>
+</html>
